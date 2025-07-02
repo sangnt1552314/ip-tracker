@@ -121,7 +121,7 @@ func (a *App) setupMainContent() tview.Primitive {
 				"● ASN Organization: " + a.ipInfo.AsOrganization + "\n" +
 				"● Hostname: " + a.ipInfo.Hostname + "\n",
 		).
-		SetDynamicColors(true)
+			SetDynamicColors(true)
 		infoFlex.AddItem(infoText, 0, 1, false)
 	}
 
@@ -136,16 +136,14 @@ func (a *App) createWorldMap() *tview.TextView {
 	worldMap := tview.NewTextView()
 	worldMap.SetDynamicColors(true)
 	worldMap.SetRegions(true)
-	// worldMap.SetScrollable(false)
-	// worldMap.SetTextAlign(tview.AlignLeft)
-	// worldMap.SetBorderPadding(1, 1, 2, 2)
+	worldMap.SetScrollable(true)
 
 	// Detailed ASCII World Map (Flat Projection - Mercator Style)
 	mapContent := services.GetWorldMapText()
 
 	if a.ipInfo != nil && a.ipInfo.Latitude != "" && a.ipInfo.Longitude != "" {
-        mapContent = a.addLocationMarker(mapContent)
-    }
+		mapContent = a.addLocationMarker(mapContent)
+	}
 
 	worldMap.SetText(mapContent)
 
@@ -153,37 +151,36 @@ func (a *App) createWorldMap() *tview.TextView {
 }
 
 func (a *App) addLocationMarker(mapContent string) string {
-    // Parse latitude and longitude
-    lat, err1 := strconv.ParseFloat(a.ipInfo.Latitude, 64)
-    long, err2 := strconv.ParseFloat(a.ipInfo.Longitude, 64)
-    
-    if err1 != nil || err2 != nil {
-        return mapContent // Return original map if parsing fails
-    }
-    
-    // Convert to map position
-    position := services.LatLongToMapPosition(lat, long)
-    
-    // Split map into lines
-    lines := strings.Split(mapContent, "\n")
-    
-    // Ensure we have enough lines
-    if position.Y >= len(lines) {
-        return mapContent
-    }
-    
-    // Convert line to rune slice for proper character handling
-    runes := []rune(lines[position.Y])
-    
-    // Ensure position X is within bounds
-    if position.X >= len(runes) {
-        return mapContent
-    }
-    
-    
-    // Replace character at position with marker
-    newLine := string(runes[:position.X]) + "[red]●[white]" + string(runes[position.X+1:])
-    lines[position.Y] = newLine
-    
-    return strings.Join(lines, "\n")
+	// Parse latitude and longitude
+	lat, err1 := strconv.ParseFloat(a.ipInfo.Latitude, 64)
+	long, err2 := strconv.ParseFloat(a.ipInfo.Longitude, 64)
+
+	if err1 != nil || err2 != nil {
+		return mapContent // Return original map if parsing fails
+	}
+
+	// Convert to map position
+	position := services.LatLongToMapPosition(lat, long)
+
+	// Split map into lines
+	lines := strings.Split(mapContent, "\n")
+
+	// Ensure we have enough lines
+	if position.Y >= len(lines) {
+		return mapContent
+	}
+
+	// Convert line to rune slice for proper character handling
+	runes := []rune(lines[position.Y])
+
+	// Ensure position X is within bounds
+	if position.X >= len(runes) {
+		return mapContent
+	}
+
+	// Replace character at position with marker
+	newLine := string(runes[:position.X]) + "[red]●[white]" + string(runes[position.X+1:])
+	lines[position.Y] = newLine
+
+	return strings.Join(lines, "\n")
 }

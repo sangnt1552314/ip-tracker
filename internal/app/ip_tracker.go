@@ -3,11 +3,11 @@ package app
 import (
 	// "log"
 	"strconv"
-	"strings"
 
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
 
+	"github.com/sangnt1552314/ip-tracker/internal/components"
 	"github.com/sangnt1552314/ip-tracker/internal/models"
 	"github.com/sangnt1552314/ip-tracker/internal/services"
 )
@@ -110,7 +110,7 @@ func (a *App) setupMainContent() tview.Primitive {
 		infoText := tview.NewTextView().SetText(
 			"● IP: " + a.ipInfo.ClientIp + "\n" +
 				"● Country: " + a.ipInfo.Country + "\n" +
-				"● ASN: " + string(a.ipInfo.Asn) + "\n" +
+				"● ASN: " + strconv.Itoa(a.ipInfo.Asn) + "\n" +
 				"● City: " + a.ipInfo.City + "\n" +
 				"● Region: " + a.ipInfo.Region + "\n" +
 				"● [green]Latitude[white]: " + "[green]" + a.ipInfo.Latitude + "[white]" + "\n" +
@@ -131,56 +131,19 @@ func (a *App) setupMainContent() tview.Primitive {
 	return contentFlex
 }
 
-// createWorldMap creates a text view with an ASCII world map
-func (a *App) createWorldMap() *tview.TextView {
-	worldMap := tview.NewTextView()
-	worldMap.SetDynamicColors(true)
-	worldMap.SetRegions(true)
-	worldMap.SetScrollable(true)
+// createWorldMap creates a draggable world map widget
+func (a *App) createWorldMap() tview.Primitive {
+	worldMap := components.NewWorldMapWidget()
 
-	// Detailed ASCII World Map (Flat Projection - Mercator Style)
-	mapContent := services.GetWorldMapText()
-
+	// Add IP location marker if IP info is available
 	if a.ipInfo != nil && a.ipInfo.Latitude != "" && a.ipInfo.Longitude != "" {
-		mapContent = a.addLocationMarker(mapContent)
-	}
+		lat, err1 := strconv.ParseFloat(a.ipInfo.Latitude, 64)
+		long, err2 := strconv.ParseFloat(a.ipInfo.Longitude, 64)
 
-	worldMap.SetText(mapContent)
+		if err1 == nil && err2 == nil {
+			worldMap.AddPoint(lat, long, "blue", '●')
+		}
+	}
 
 	return worldMap
-}
-
-func (a *App) addLocationMarker(mapContent string) string {
-	// Parse latitude and longitude
-	lat, err1 := strconv.ParseFloat(a.ipInfo.Latitude, 64)
-	long, err2 := strconv.ParseFloat(a.ipInfo.Longitude, 64)
-
-	if err1 != nil || err2 != nil {
-		return mapContent // Return original map if parsing fails
-	}
-
-	// Convert to map position
-	position := services.LatLongToMapPosition(lat, long)
-
-	// Split map into lines
-	lines := strings.Split(mapContent, "\n")
-
-	// Ensure we have enough lines
-	if position.Y >= len(lines) {
-		return mapContent
-	}
-
-	// Convert line to rune slice for proper character handling
-	runes := []rune(lines[position.Y])
-
-	// Ensure position X is within bounds
-	if position.X >= len(runes) {
-		return mapContent
-	}
-
-	// Replace character at position with marker
-	newLine := string(runes[:position.X]) + "[red]●[white]" + string(runes[position.X+1:])
-	lines[position.Y] = newLine
-
-	return strings.Join(lines, "\n")
 }

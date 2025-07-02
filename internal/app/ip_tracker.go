@@ -108,20 +108,19 @@ func (a *App) setupMainContent() tview.Primitive {
 		infoFlex.AddItem(tview.NewTextView().SetText("Error fetching IP information"), 0, 1, false)
 	} else {
 		infoText := tview.NewTextView().SetText(
-			"● IP: " + a.ipInfo.ClientIp + "\n" +
-				"● Country: " + a.ipInfo.Country + "\n" +
-				"● ASN: " + strconv.Itoa(a.ipInfo.Asn) + "\n" +
-				"● City: " + a.ipInfo.City + "\n" +
-				"● Region: " + a.ipInfo.Region + "\n" +
-				"● [green]Latitude[white]: " + "[green]" + a.ipInfo.Latitude + "[white]" + "\n" +
-				"● [green]Longitude[white]: " + "[green]" + a.ipInfo.Longitude + "[white]" + "\n" +
-				"● Colo: " + a.ipInfo.Colo + "\n" +
-				"● Postal Code: " + a.ipInfo.PostalCode + "\n" +
-				"● HTTP Protocol: " + a.ipInfo.HttpProtocol + "\n" +
-				"● ASN Organization: " + a.ipInfo.AsOrganization + "\n" +
-				"● Hostname: " + a.ipInfo.Hostname + "\n",
-		).
-			SetDynamicColors(true)
+			"[yellow]●[white] [cyan]IP[white]: [lightblue]" + a.ipInfo.ClientIp + "[white]\n" +
+				"[yellow]●[white] [cyan]Country[white]: [lightgreen]" + a.ipInfo.Country + "[white]\n" +
+				"[yellow]●[white] [cyan]ASN[white]: [orange]" + strconv.Itoa(a.ipInfo.Asn) + "[white]\n" +
+				"[yellow]●[white] [cyan]City[white]: [lightgreen]" + a.ipInfo.City + "[white]\n" +
+				"[yellow]●[white] [cyan]Region[white]: [lightgreen]" + a.ipInfo.Region + "[white]\n" +
+				"[yellow]●[white] [cyan]Latitude[white]: [green]" + a.ipInfo.Latitude + "[white]\n" +
+				"[yellow]●[white] [cyan]Longitude[white]: [green]" + a.ipInfo.Longitude + "[white]\n" +
+				"[yellow]●[white] [cyan]Colo[white]: [magenta]" + a.ipInfo.Colo + "[white]\n" +
+				"[yellow]●[white] [cyan]Postal Code[white]: [orange]" + a.ipInfo.PostalCode + "[white]\n" +
+				"[yellow]●[white] [cyan]HTTP Protocol[white]: [lightblue]" + a.ipInfo.HttpProtocol + "[white]\n" +
+				"[yellow]●[white] [cyan]ASN Organization[white]: [lightcyan]" + a.ipInfo.AsOrganization + "[white]\n" +
+				"[yellow]●[white] [cyan]Hostname[white]: [lightblue]" + a.ipInfo.Hostname + "[white]\n",
+		).SetDynamicColors(true)
 		infoFlex.AddItem(infoText, 0, 1, false)
 	}
 
@@ -141,7 +140,7 @@ func (a *App) createWorldMap() tview.Primitive {
 		long, err2 := strconv.ParseFloat(a.ipInfo.Longitude, 64)
 
 		if err1 == nil && err2 == nil {
-			worldMap.AddPoint(lat, long, "blue", '●')
+			worldMap.AddPoint(lat, long, "red", '●')
 		}
 	}
 
